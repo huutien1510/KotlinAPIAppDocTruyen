@@ -4,6 +4,7 @@ package com.example.apidoctruyen.Controller;
 import com.example.apidoctruyen.entity.Chapter;
 
 import com.example.apidoctruyen.entity.Danhgia;
+import com.example.apidoctruyen.entity.Taikhoan;
 import com.example.apidoctruyen.model.DanhGiaDto;
 import com.example.apidoctruyen.model.TruyenDto;
 import com.example.apidoctruyen.repository.BinhLuanRepository;
@@ -27,45 +28,70 @@ public class DanhGiaController {
         return danhgia;
     }
 
-    @GetMapping("/truyen/gettbdanhgiatheochapter/{id}")
-    public Double gettbdanhgiatheochapter(@PathVariable int id) {
-        Double danhgia = repo.getAverageRatingByIdChapter(id);
-        return danhgia;
-    }
+
     @GetMapping("/getidbychapterandtk/{idchapter}/{idtaikhoan}")
     public List<Integer> getIDByChapterAndTK(@PathVariable int idchapter, @PathVariable int idtaikhoan){
         return repo.getIDByChapterAndTK(idchapter, idtaikhoan);
     }
-    
-    @PutMapping ("/danhgia/{idchapter}/{idtaikhoan}/{sosao}")
-    public void updateDanhGia(@PathVariable Integer idchapter, @PathVariable Integer idtaikhoan, @PathVariable Double sosao){
-        Danhgia danhgia = repo.findByIdchapterAndIdtaikhoan(idchapter, idtaikhoan);
-        if (danhgia != null) {
-            danhgia.setSosao(sosao);
-            repo.save(danhgia);
 
+    @PostMapping("/danhgia")
+    public ResponseEntity<DanhGiaDto> addOrUpdateDanhGia(@RequestBody DanhGiaDto danhGiaDto) {
+        System.out.println("Received request: idchapter=" + danhGiaDto.getIdchapter() +
+                ", idtaikhoan=" + danhGiaDto.getIdtaikhoan() +
+                ", sosao=" + danhGiaDto.getSosao());
+
+        // Kiểm tra nếu đánh giá đã tồn tại
+        Danhgia danhgia = repo.findByIdchapterAndIdtaikhoan(danhGiaDto.getIdchapter(), danhGiaDto.getIdtaikhoan());
+        if (danhgia != null) {
+            System.out.println("Updating existing rating...");
+            danhgia.setSosao(danhGiaDto.getSosao());
+            repo.save(danhgia);
+            return ResponseEntity.ok(danhGiaDto);
+        } else {
+            System.out.println("Creating new rating...");
+
+            Chapter chapter = new Chapter();
+            chapter.setId(danhGiaDto.getIdchapter());
+
+            Taikhoan taikhoan = new Taikhoan();
+            taikhoan.setId(danhGiaDto.getIdtaikhoan());
+
+            Danhgia newDanhgia = new Danhgia();
+            newDanhgia.setIdchapter(chapter);
+            newDanhgia.setIdtaikhoan(taikhoan);
+            newDanhgia.setSosao(danhGiaDto.getSosao());
+            newDanhgia.setNgaydanhgia(LocalDate.now());
+
+            repo.save(newDanhgia);
+            return ResponseEntity.ok(danhGiaDto);
         }
     }
-    @PostMapping("/adddanhgia")
-    public ResponseEntity<DanhGiaDto> adgetidbychapterandtkdBinhLuan(@RequestBody DanhGiaDto binhLuanDto) {
 
-
-        // Insert using custom query
-        Integer newId = repo.addDanhGia(
-                binhLuanDto.getIdchapter(),
-                binhLuanDto.getIdtaikhoan(),
-                binhLuanDto.getSosao(),
-                LocalDate.now()
-        );
-
-        // Prepare response DTO
-        DanhGiaDto responseDto = new DanhGiaDto();
-        responseDto.setId(newId);
-        responseDto.setIdchapter(binhLuanDto.getIdchapter());
-        responseDto.setIdtaikhoan(binhLuanDto.getIdtaikhoan());
-        responseDto.setSosao(binhLuanDto.getSosao());
-        responseDto.setNgaydanhgia(String.valueOf(LocalDate.now()));
-
-        return ResponseEntity.ok(responseDto);
+    @GetMapping("/danhgia/{idchapter}/{idtaikhoan}")
+    public ResponseEntity<DanhGiaDto> getDanhGiaByUserAndChapter(@PathVariable Integer idchapter, @PathVariable Integer idtaikhoan) {
+        Danhgia danhgia = repo.findByIdchapterAndIdtaikhoan(idchapter, idtaikhoan);
+        if (danhgia != null) {
+            DanhGiaDto responseDto = new DanhGiaDto();
+            responseDto.setId(danhgia.getId());
+            responseDto.setIdchapter(danhgia.getIdchapter().getId());
+            responseDto.setIdtaikhoan(danhgia.getIdtaikhoan().getId());
+            responseDto.setSosao(danhgia.getSosao());
+            responseDto.setNgaydanhgia(String.valueOf(danhgia.getNgaydanhgia()));
+            return ResponseEntity.ok(responseDto);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+    @GetMapping("/truyen/gettbdanhgiatheochapter/{id}")
+    public ResponseEntity<Double> getAverageRatingByIdChapter(@PathVariable int id) {
+        Double averageRating = repo.getAverageRatingByIdChapter(id);
+
+        // Trả về 0.0 nếu không có dữ liệu
+        if (averageRating == null) {
+            averageRating = 0.0;
+        }
+
+        return ResponseEntity.ok(averageRating);
+    }
+
 }

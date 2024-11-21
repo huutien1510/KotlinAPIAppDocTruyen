@@ -1,5 +1,6 @@
 package com.example.apidoctruyen.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class Danhgia {
     @JoinColumn(name = "idchapter")
     private Chapter idchapter;
 
+
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idtaikhoan", nullable = false)
@@ -33,5 +35,4 @@ public class Danhgia {
     @NotNull
     @Column(name = "ngaydanhgia", nullable = false)
     private LocalDate ngaydanhgia;
-
 }

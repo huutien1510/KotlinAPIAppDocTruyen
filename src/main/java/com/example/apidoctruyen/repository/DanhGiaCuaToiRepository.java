@@ -11,6 +11,17 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface DanhGiaCuaToiRepository extends JpaRepository<Danhgia, Integer> {
-    @Query("select NEW com.example.apidoctruyen.model.DanhGiaCuaToiDto(tk.id,tk.idchapter.id,tk.idtaikhoan.id,tk.sosao,tk.ngaydanhgia) from Danhgia tk where tk.idtaikhoan.id = :idtaikhoan")
-    public List<DanhGiaCuaToiDto> findByIdn(@Param("idtaikhoan") Integer idtaikhoan);
+    @Query("SELECT NEW com.example.apidoctruyen.model.DanhGiaCuaToiDto( " +
+            "tk.id, " +
+            "ch.idtruyen.tentruyen AS tenTruyen, " +
+            "ch.tenchapter AS tenChapter, " +
+            "tk.sosao, " +
+            "tk.ngaydanhgia, " +
+            "ch.idtruyen.linkanh AS linkAnh, " +
+            "tk.idtaikhoan.id AS idtaikhoan) " +
+            "FROM Danhgia tk " +
+            "JOIN tk.idchapter ch " +
+            "WHERE tk.idtaikhoan.id = :idtaikhoan")
+    List<DanhGiaCuaToiDto> findByIdn(@Param("idtaikhoan") Integer idtaikhoan);
 }
+

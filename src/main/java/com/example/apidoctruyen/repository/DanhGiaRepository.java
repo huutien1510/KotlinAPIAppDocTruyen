@@ -23,11 +23,9 @@ public interface DanhGiaRepository extends JpaRepository<Danhgia, Integer> {
     @Query("UPDATE Danhgia d SET d.sosao = :sosao WHERE d.idchapter = :idchapter AND d.idtaikhoan = :idtaikhoan")
     int updateDanhGia(@Param("idchapter") int idchapter, @Param("idtaikhoan") int idtaikhoan, @Param("sosao") double sosao);
 
-    @Query("SELECT round(avg(d.sosao), 2) FROM Danhgia d WHERE d.idchapter.id = :id")
-    Double getAverageRatingByIdChapter(@Param("id") int id);
+//    @Query("SELECT round(avg(d.sosao), 2) FROM Danhgia d WHERE d.idchapter.id = :id")
+//    Double getAverageRatingByIdChapter(@Param("id") int id);
 
-    @Query("SELECT round(avg(d.sosao), 2) FROM Danhgia d WHERE d.idchapter.id = : idchapter")
-    Double getAverageRatingByIdChapter(Integer idchapter);
     //Optional<Danhgia> findByIdChapterAndIdTaiKhoan(Integer idChapter, Integer idTaiKhoan);
 
 
@@ -36,13 +34,24 @@ public interface DanhGiaRepository extends JpaRepository<Danhgia, Integer> {
     @Query("UPDATE Danhgia d SET d.sosao = :sosao WHERE d.idchapter.id = :idchapter AND d.idtaikhoan.id = :idtaikhoan")
     void updateDanhGia(Integer idchapter, Integer idtaikhoan, Integer sosao);
 
-    @Query("SELECT d FROM Danhgia d WHERE d.idchapter.id = :idchapter AND d.idtaikhoan.id = :idtaikhoan")
-    Danhgia findByIdchapterAndIdtaikhoan(Integer idchapter, Integer idtaikhoan);
+//    @Query("SELECT d FROM Danhgia d WHERE d.idchapter.id = :idchapter AND d.idtaikhoan.id = :idtaikhoan")
+//    Danhgia findByIdchapterAndIdtaikhoan(Integer idchapter, Integer idtaikhoan);
 
     @Query(value = "INSERT INTO Danhgia (idchapter, idtaikhoan, sosao, ngaydanhgia) " +
             "VALUES (:idchapter, :idtaikhoan, :sosao, :ngaydanhgia); " +
             "SELECT SCOPE_IDENTITY()",
             nativeQuery = true)
     Integer addDanhGia(Integer idchapter, Integer idtaikhoan,Double sosao, LocalDate ngaydanhgia);
+
+    @Query("SELECT d FROM Danhgia d WHERE d.idchapter.id = :idchapter AND d.idtaikhoan.id = :idtaikhoan")
+    Danhgia findByIdchapterAndIdtaikhoan(@Param("idchapter") Integer idchapter, @Param("idtaikhoan") Integer idtaikhoan);
+
+    @Query("SELECT COALESCE(ROUND(AVG(d.sosao), 2), 0.0) FROM Danhgia d WHERE d.idchapter.id = :id")
+    Double getAverageRatingByIdChapter(@Param("id") Integer id);
+
+
+
+
+
 
 }

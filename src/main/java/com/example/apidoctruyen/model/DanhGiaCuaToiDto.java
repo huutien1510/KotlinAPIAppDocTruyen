@@ -11,13 +11,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DanhGiaCuaToiDto {
-    private Integer id;
-
-    private Integer idchapter;
-
-    private Integer idtaikhoan;
-
-    private Double sosao;
-    private LocalDate ngaydanhgia;
-
+    private Integer id;          // ID của đánh giá
+    private String tenTruyen;    // Tên truyện
+    private String tenChapter;   // Tên chương
+    private Double sosao;        // Số sao đánh giá
+    private LocalDate ngaydanhgia; // Ngày đánh giá
+    private String linkAnh;      // Link ảnh của truyện
+    private Integer idtaikhoan;  // ID tài khoản của người đánh giá
 }
+
+

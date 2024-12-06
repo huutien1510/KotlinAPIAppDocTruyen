@@ -16,7 +16,6 @@ import java.util.Optional;
 @Repository
 public interface TaiKhoanRepository extends JpaRepository<Taikhoan, Integer> {
 
-
     /*@Query("select NEW com.example.apidoctruyen.model.TaiKhoanDto(tk.id,tk.email,tk.hoten,tk.dienthoai,tk.diemthuong) from Taikhoan tk where tk.email = :email")
     TaiKhoanDto findByEmail(@Param("email") String email);*/
     @Query("select tk.id from Taikhoan tk where tk.email = :email")
@@ -49,6 +48,7 @@ public interface TaiKhoanRepository extends JpaRepository<Taikhoan, Integer> {
     //    }
     @Query("insert into Taikhoan (email,matkhau,hoten,dienthoai) values (:email,:matkhau,:hoten,:dienthoai)")
     public Boolean insertNewTaiKhoan(@Param("email") String email,@Param("matkhau") String matkhau,@Param("hoten") String ten,@Param("dienthoai") String dienthoai);
+
 
 
 }
